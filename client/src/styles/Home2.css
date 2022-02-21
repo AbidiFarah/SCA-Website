@@ -1,0 +1,43 @@
+.homeaboutcontainer{
+    
+    width: 100%;
+    height: 800px;
+    background-color: #ffffff;
+    float: right;
+    
+    padding-top: 10px;
+  }
+
+  .homeAbout  p {
+    position: relative;
+    font-size: 20px;
+    font-weight: lighter;
+    color:  rgb(0, 0, 0);
+    align-items: right;
+    display: inline;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  }
+
+  .homeAbout h1{
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    font-size: 40;
+    display: inline;
+    height: 2;
+    font-weight: 30;
+    color: rgb(0, 0, 0);
+    padding-bottom: 12rem;
+    position:absolute;
+  }
+  .pic {
+    
+   
+    text-align: left;
+    display: flex;
+    justify-content: right;
+    align-items: right;
+    padding-right: 4rem;
+    padding-top: 6rem;
+    float: right;
+    
+   
+  }
