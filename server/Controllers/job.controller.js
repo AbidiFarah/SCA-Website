@@ -1,81 +1,68 @@
-const User = require ("../models/user.model")
-
-
-
-
+const Job = require("../models/job.model")
 
 class JobController {
-   //create Jost
-   async createJob (req,res){
-       const newJob =  Job(req.body)
-       try {
-        const saveJob =  await job.save()
-        res.status(200).json(saveJob)
+   //create job 
+  createJob = async (req,res) =>{
+     const job = Job(req.body)
+     job.save()
+     .then ((savedJob) => res.status(200).json(savedJob))
+     .catch((err)=> res.status(500).json(err))
+  }
+   
+  //UpdateJob
+  updateJob = async (req,res) => {
+    const job = await Job.findById({_id:req.params.id})
+     if ( job.username === req.body.username){
 
-       }catch(err){
-           res.status(500).json(err)
+          await Job.findByIdAndUpdate({_id:req.params.id},req.body , {new:true})
 
-       }
-   }
+         .then((updatedjob)=> res.status(200).json(updatedjob))
+         .catch((err) => res.status(500).json(err))
+     }
+     
+    else {
+        res.status(401).json('Sorry you can update only your job ')
+     }
+  }
 
-   //update job
-     async updateJob (req,res) {
-         if (req.body._id == req.params.username){
-             if (req.body.password){
-                 const salt = await bcrypt.genSalt(10)
-                 req.bady.password = await bcrypt(req.body.password , salt)
-             }
+   //Delete job
+  deletejob = async(req,res) =>{
+    if (Job.username === req.body){
 
-          try {
-              const updateJob = await User.findByIdAndUpdate(req.params.id , {
-                  $set:  req.body
-              },{new:true}
-              )
-              res.status(200).json(updateUser)
-
-          }catch (err) {
-              res.status(500).json(err)
-          }
-         }else {
-           res.status(401).json(" You can update only your account ")
-         }
-    
+      await Job.deleteOne({_id: req.params.id})
+     .then((deleteConfirmation) => res.status(200).json(deleteConfirmation))
+     .catch((err) => res.status(500).json(err))
     }
-
-
-   //delete
-   async deleteJob(req,res) {
-    if (req.body._id == req.params.id){
-     try {
-        const User = await User.findById(req.params.id)
-          try {
-               await Job.deleteMany({username: user.username})
-               await User.findByIdAndDelete(res.params.id)
-                res.status(200).json("User has been deleted....")
-
-            }catch (err) {
-                res.status(500).json(err)
-             }
-        }catch (err){
-        res.status(404).json("User is not found !")
-         }
-
-     }else {
-      res.status(401).json(" You can delete only your account ")
-      }
+    else {
+        res.status(401).json('Sorry you can delete only your job ')
     }
-
-    //Get user
-    async getJob (req,res){
-        try {
-            const user = await User.findById(req.params.id)
-            const {oassword ,...others} = user._doc
-            res.status(200).json(others)
-        }catch (err){
-            res.status(500).json(err)
-        }
-    }
-    
-    
 }
-       module.exports = new JobController();
+
+   //GetJob
+  getAllJob = async (req,res) =>{
+      username = req.query.username 
+      cat = req.query.cat
+      title = req.query.title
+        .then(async () => { 
+            let jobs
+             if (username){
+                jobs = await Job.find({username})
+             }
+             else if (categories){
+                 jobs = await Job.find({categories: $in [cat]})
+             }
+             else if (title){
+                 jobs = await Job.find({title})
+             }
+             else {
+                 jobs = await Job.find()
+             }
+             res.status(200).json(job)
+        })
+        .catch((err) => { 
+            res.status(500).json(err)
+        })  
+
+  }
+  
+}  module.exports = new JobController();

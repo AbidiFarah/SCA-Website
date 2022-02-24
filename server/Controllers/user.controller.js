@@ -19,8 +19,12 @@ class UserController {
 
    //Delete User
     deleteUser = async(req,res) =>{
+        const user = await User.findById(req.params.id)
      
         await User.deleteOne({_id: req.params.id})
+        await Job.deleteMany({username: user.username})
+        await Blog.deleteMany({username: user.username})
+
         .then((deleteConfirmation) => res.status(200).json(deleteConfirmation))
         .catch((err) => res.status(500).json(err))
 
