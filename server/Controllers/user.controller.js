@@ -10,8 +10,7 @@ class UserController {
                 req.body.password = await bcrypt.hash(req.body.password,salt)
             }
          
-            await  User.findByIdAndUpdate({_id: req.params.id},req.body, {new:true
-            })
+            await  User.findByIdAndUpdate({_id: req.params.id},req.body, {new:true })
              .then ((updatedUser) => res.status(200).json(updatedUser))
              .catch((err)=> res.status(500).json(err))
     }
@@ -19,12 +18,10 @@ class UserController {
 
    //Delete User
     deleteUser = async(req,res) =>{
-        const user = await User.findById(req.params.id)
-     
+        await User.findById(req.params.id)
+       // await Job.deleteMany({username: user.username})
+       // await Blog.deleteMany({username: user.username})
         await User.deleteOne({_id: req.params.id})
-        await Job.deleteMany({username: user.username})
-        await Blog.deleteMany({username: user.username})
-
         .then((deleteConfirmation) => res.status(200).json(deleteConfirmation))
         .catch((err) => res.status(500).json(err))
 

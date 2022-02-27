@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const cookies = require("cookie-parser");
-const req = require("express/lib/request");
+const express = require('express');
+const cors = require('cors');
+const cookies = require('cookie-parser');
+const req = require('express/lib/request');
 const dotenv = require('dotenv').config()
 
 
@@ -24,5 +24,5 @@ require("./server/routes/job.routes")(app)
 require("./server/routes/blog.routes")(app)
 
 
-app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT} !`))
+app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT} !`) )
 

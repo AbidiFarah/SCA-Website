@@ -7,22 +7,22 @@ const bcrypt = require ('bcrypt')
 class AuthController {
     //register
      async register (req,res) {
-        const user =  User(req.body) 
-            await user.save()
-            .then(() => {
-               res
-                .cookie("usertoken" , jwt.sign({_id: user._id},secret), {
-                   httpOnly : true ,
-                })
-                .json({msg: "success",user})
-           }) 
-           .catch((err) => res.json(err))        
+        const user = User(req.body) 
+            user
+             .save()
+             .then(() => {
+               res.status(200).json({msg: "Success!"})
+                  .cookie("usertoken" , jwt.sign({_id: user._id},secret), { httpOnly : true  }) 
+                  
+             }) 
+             .catch((err) => res.json(err))        
 
     }
     //login
     async login (req,res) {
-        await  User.findOne({ email:req.body.email}
-          .then ((user) => {
+        
+            await User.findOne({ email:req.body.email})
+            .then ((user) => {
               if (user == null) {
                   res.json ({msg:"invalid login attempt"}) 
               }
@@ -32,21 +32,21 @@ class AuthController {
                  .then ((passwordIsValid) => {
                     if (passwordIsValid) {
                         res
+                         .json({msg:"Success!"})  
                          .cookie("usertoken", jwt.sign( { _id : user._id},secret),{
                            httpOnly: true ,
                          })
-                         .json({msg:"Success!"})  
+                         
                     }
                     else {
-                        res.json({msg: "Invalid login attempt"})
+                        res.json({msg: "Invalid login , check  your password"})
                     }
                    })
                  .catch((err) => res.json({msg: "invalid login attempt",err}))
-                  
-              }
+            }
            })
            .catch ((err) => res.json(err))
-        )
+        
     }
     //getloggedInUser
      async getLoggedInUser(req, res) {

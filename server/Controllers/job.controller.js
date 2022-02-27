@@ -4,38 +4,35 @@ class JobController {
    //create job 
   createJob = async (req,res) =>{
      const job = Job(req.body)
-     job.save()
+     job
+     .save()
      .then ((savedJob) => res.status(200).json(savedJob))
      .catch((err)=> res.status(500).json(err))
   }
    
   //UpdateJob
   updateJob = async (req,res) => {
-    const job = await Job.findById({_id:req.params.id})
-     if ( job.username === req.body.username){
+     const job = await Job.findById({_id:req.params.id})
 
-          await Job.findByIdAndUpdate({_id:req.params.id},req.body , {new:true})
-
-         .then((updatedjob)=> res.status(200).json(updatedjob))
-         .catch((err) => res.status(500).json(err))
-     }
+         if ( job.username === req.body.username){
+           await Job.updateOne({_id: req.params.id} , { $set: req.body }, {new:true})
+           .then((updatedjob) => res.status(200).json({msg: "Success !",updatedjob}))
+           .catch((err) => res.status(500).json(err))
+         }
      
-    else {
+         else {
         res.status(401).json('Sorry you can update only your job ')
-     }
-  }
+        }
+    }
+  
 
    //Delete job
   deletejob = async(req,res) =>{
-    if (Job.username === req.body){
 
-      await Job.deleteOne({_id: req.params.id})
-     .then((deleteConfirmation) => res.status(200).json(deleteConfirmation))
+     await Job.findByIdAndDelete({_id: req.params.id})
+     .then((deleteConfirmation) => res.status(200).json({msg: "Is Deleted !", deleteConfirmation}))
      .catch((err) => res.status(500).json(err))
-    }
-    else {
-        res.status(401).json('Sorry you can delete only your job ')
-    }
+
 }
 
    //GetJob
