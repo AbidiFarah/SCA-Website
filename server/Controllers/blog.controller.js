@@ -11,33 +11,27 @@ class BlogController {
    
   //UpdateBlog
   updateBlog= async (req,res) => {
-    const blog = await Blog.findById({_id: req.params.id})
-     if (blog.username === req.body.username){
+    const blog= await Blog.findById({_id:req.params.id})
 
-          await Blog.findByIdAndUpdate({_id:req.params.id},req.body , {new:true})
+    if ( blog.username === req.body.username){
+      await Blog.updateOne({_id: req.params.id} , { $set: req.body }, {new:true})
+      .then((updatedblog) => res.status(200).json({msg: "Success !",updatedblog}))
+      .catch((err) => res.status(500).json(err))
+    }
 
-         .then((updatedBlog)=> res.status(200).json(updatedBlog))
-         .catch((err) => res.status(500).json(err))
-     }
-     
     else {
-        res.status(401).json('Sorry you can update only your blog ')
-     }
+      res.status(401).json('Sorry you can update only your Blog ')
+   }
 
   }
 
 
    //Delete Blog
   deleteBlog = async(req,res) =>{
-    if (Blog.username === req.body){
+    await Blog.findByIdAndDelete({_id: req.params.id})
+    .then((deleteConfirmation) => res.status(200).json({msg: "Is Deleted !", deleteConfirmation}))
+    .catch((err) => res.status(500).json(err))
 
-      await Blog.deleteOne({_id: req.params.id})
-     .then((deleteConfirmation) => res.status(200).json(deleteConfirmation))
-     .catch((err) => res.status(500).json(err))
-    }
-    else {
-        res.status(401).json('Sorry you can delete only your blog ')
-    }
 }
 
    //GetAllBlog
