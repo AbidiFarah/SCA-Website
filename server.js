@@ -1,9 +1,8 @@
-const express = require("express");
-const cors = require("cors");
-const cookies = require("cookie-parser");
-const req = require("express/lib/request");
-
-const port = 3300;
+const express = require('express');
+const cors = require('cors');
+const cookies = require('cookie-parser');
+const req = require('express/lib/request');
+const dotenv = require('dotenv').config()
 
 
 const app = express();
@@ -12,14 +11,18 @@ app.use(
   cors({
     credentials: true,
     origin: "http://localhost:3000",
+    
   })
 );
 app.use(express.json())
 app.use(cookies())
 
 require("./server/config/mongoose.config")()
-require("./server/routes/auth.routes","./server/routes/user.routes")(app)
+require("./server/routes/auth.routes")(app)
+require("./server/routes/user.routes")(app)
+require("./server/routes/job.routes")(app)
+require("./server/routes/blog.routes")(app)
 
 
-app.listen(port, () => console.log(`Listening on port ${port} !`))
+app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT} !`) )
 
