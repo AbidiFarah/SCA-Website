@@ -1,12 +1,12 @@
 const mongoose = require ('mongoose')
 
 
-const JobSchema = new mongoose.Schema(
+const BlogSchema = new mongoose.Schema(
  {
     title: {
         type: String ,
         required: true ,
-     },
+    },
     desc: {
         type: String ,
         required: true
@@ -20,17 +20,9 @@ const JobSchema = new mongoose.Schema(
         required:false,
         unique:true
     },
-    numContact: {
-        type:Number,
-        required:false
-    },
-    price:{
-        type:String ,
-        required: true 
-    },
     username: {
         type:String,
-        required:true
+        required:false
     },
     categories: {
         type: Array,
@@ -43,4 +35,4 @@ const JobSchema = new mongoose.Schema(
  }, { timestamps: true }
 )
 
-module.exports =mongoose.model("Job",JobSchema)
+module.exports =mongoose.model("Blog",BlogSchema)
