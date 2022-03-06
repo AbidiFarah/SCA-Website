@@ -1,7 +1,7 @@
 const mongoose = require ('mongoose')
 
 
-const JobsSchema = new mongoose.Schema(
+const JobSchema = new mongoose.Schema(
  {
     title: {
         type: String ,
@@ -17,7 +17,7 @@ const JobsSchema = new mongoose.Schema(
     },
     email: {
         type: String ,
-        required:true,
+        required:false,
         unique:true
     },
     numContact: {
@@ -35,8 +35,12 @@ const JobsSchema = new mongoose.Schema(
     categories: {
         type: Array,
         required:true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
  }, { timestamps: true }
 )
 
-module.exports =mongoose.model("Job",JobsSchema)
+module.exports =mongoose.model("Job",JobSchema)

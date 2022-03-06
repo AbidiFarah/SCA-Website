@@ -1,10 +1,11 @@
-const mongoose = require("mongoose");
-const uri = "mongodb+srv://farah:farah123@shecodes.f7ar8.mongodb.net/Auth?retryWrites=true&w=majority"
+const mongoose = require('mongoose')
+const dotenv = require('dotenv').config()
+
 module.exports = () => {
   mongoose
-    .connect(uri, {
+    .connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      useUnifiedTopology: true
     })
     .then(() => console.log("connected to database"))
     .catch((err) =>
