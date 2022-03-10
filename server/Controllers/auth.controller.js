@@ -1,48 +1,68 @@
 const User = require ("../models/user.model")
+const VerificationToken = require("../models/verificationToken.model")
+const { sendError } = require("../utils/helper.utils")
+const { generteVT, mailTransport} = require("../utils/mail.utils")
+const { secret } = require("../config/jwt")
+
 const jwt = require ('jsonwebtoken')
-const bcrypt = require ('bcrypt')
+const bcrypt = require ('bcrypt');
 
 
 
 class AuthController {
     //register
      async register (req,res) {
-        const user = User(req.body) 
-            user
-             .save()
-             .then(() => {
-               res.status(200).json({msg: "Success!"})
-                  .cookie("usertoken" , jwt.sign({_id: user._id},secret), { httpOnly : true  }) 
-                  
-             }) 
-             .catch((err) => res.json(err))        
+        const user  = await User.findOne(req.body.email);
+          if ( user ){
+            sendError(res ,400 ,'This email is already in use try sign-in')
+          }
+           const NewUser = User(req.body)
+           const VT = generteVT()
+           const verificationToken = new VerificationToken({
+             owner: NewUser._id,
+             token: VT
+           })
+           await verificationToken.save()
+           await NewUser.save()
+
+           mailTransport().sendMail({
+             from: 'SheCodesAfrica@gmail.com',
+             to: NewUser.email,
+             subject: "Verify your email account"?
+             html: <h1>${VT}</h1>
+           })
+
+
+            NewUser.then(() => {
+               res.status(200).json({msg: 'Success!'})
+                  .cookie('usertoken' , jwt.sign({_id: NewUser._id},secret), { httpOnly : true  }) 
+                 }) 
+                  .catch((err) => res.json(err))        
 
     }
     //login
     async login (req,res) {
         
-            await User.findOne({ email:req.body.email})
+         await User.findOne({ email:req.body.email})
             .then ((user) => {
-              if (user == null) {
-                  res.json ({msg:"invalid login attempt"}) 
-              }
+              if (user == null) { sendError(res ,401 ,'invalid login attempt')}
               else {
                  bcrypt 
-                 .compare(req.body.password , user.password)
+                 .compareSync(req.body.password , user.password)
                  .then ((passwordIsValid) => {
                     if (passwordIsValid) {
-                        res
-                         .json({msg:"Success!"})  
-                         .cookie("usertoken", jwt.sign( { _id : user._id},secret),{
+                        res.status(200).json({msg:'Success!'})  
+                        res.cookie('usertoken', jwt.sign( { _id : user._id},secret),{
                            httpOnly: true ,
+                           expiresIn: 'id'
                          })
                          
                     }
                     else {
-                        res.json({msg: "Invalid login , check  your password"})
+                        res.json({msg: 'Invalid login , check  your password'})
                     }
                    })
-                 .catch((err) => res.json({msg: "invalid login attempt",err}))
+                 .catch((err) => res.json({msg: 'invalid login attempt',err}))
             }
            })
            .catch ((err) => res.json(err))
