@@ -8,6 +8,7 @@ const { secret } = require("../config/jwt")
 const jwt = require ('jsonwebtoken')
 const bcrypt = require ('bcrypt');
 const {isValidObjectId } = require('mongoose')
+const { send } = require("express/lib/response")
 
 class AuthController {
     //register
@@ -30,7 +31,7 @@ class AuthController {
              mailTransport().sendMail({
                 from: 'SheCodesAfrica@gmail.com',
                 to: NewUser.email,
-                subject: "Verify your email account"?
+                subject: "Verify your email account",
                 html: '<h1>${VT}</h1>'
           
              })
@@ -87,18 +88,59 @@ class AuthController {
 
 
     //verifyEmail 
-    verfifyEmail = async(res) => {
+    verfifyEmail = async(req ,res) => {
       const {userId , VT} =req.body
       if(!userId || !VT.trim()){
-       return sendError(res,'Invalid request , missing parameters !')}
+       return sendError(res,200,'Invalid request , missing parameters !')}
       
       if(!isValidObjectId(userId)){
-        return sendError(res,'  Invalid user id ')}
-    
-    }
+        return sendError(res,200,'  Invalid user id ')}
+      
+      const user = await User.findById(userId)
+      if(!user) return sendError(res,200,'Sorry , user not found!')
+
+      if(user.verified) return sendError(res,200,' This account is already verified!')
+
+      const token = await VerificationToken.findOne({owner: user._id })
+      if(!token ) return sendError(res,200,'Sorry, user not found !')
+
+
+      const isMatched = await token.compareToken(VT)
+      if(!isMatched) return sendError(res,200,'Please provide a valid token !')
+      
+      user.verified =true
+
+      await VerificationToken.findOneAndDelete(token._id)
+
+      await user.save()
+
+      mailTransport().sendMail({
+         from: 'SheCodesAfrica@gmail.com',
+         to: user.email,
+         subject:' Welcome email',
+         html: '<h1>"Email Verfied Successfully, Thanks for connecting with us</h1>'
+   
+      })
+      res.json({
+         success: true ,
+         message:'Your email is verified.',
+         user:{ username: user.username, email: user.email ,id: user._id}
+      })
+   
+   }
+
+   //forget password
+   forgotPassword = async (req,res) => {
+      const {email} = req.body 
+      if(!email) return sendError(res,401,'Please provide a valied email')
+
+      const user = await User.findOne({email})
+      if(!user) return sendError(res,3 )
+      
+
+   }
   
-}
-       module.exports = new AuthController();
+} module.exports = new AuthController();
     
 
     
