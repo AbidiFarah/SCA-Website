@@ -14,7 +14,7 @@ function About(props) {
             </div>
             <div className='aboutBottom'>
                 <h1>About Us</h1>
-                <p>We provide support through our diverse offline and online communities.
+                <p>We provide suppppport through our diverse offline and online communities.
                      With amazing programs and initiatives to always keep you engaged,
                      you never run out of network, resources and mentorship.
                      We provide resources and monitor your growth every step of the way
