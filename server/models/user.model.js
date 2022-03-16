@@ -1,5 +1,6 @@
 const mongoose =require ('mongoose')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { verify } = require('crypto');
 
 
 const UserSchema = new mongoose.Schema(
@@ -24,6 +25,11 @@ const UserSchema = new mongoose.Schema(
       photo: {
         type: String,
         default:""
+      },
+      verified: {
+        type: Boolean,
+        default: false,
+        required: true 
       }
     } , { timestamps: true } )
 
