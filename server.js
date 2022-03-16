@@ -3,9 +3,6 @@ const cors = require('cors');
 const cookies = require('cookie-parser');
 const req = require('express/lib/request');
 const dotenv = require('dotenv').config()
-
-
-
 const app = express();
 
 app.use(

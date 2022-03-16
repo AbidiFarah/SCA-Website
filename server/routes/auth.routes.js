@@ -1,9 +1,19 @@
+
 const AuthController = require('../Controllers/auth.controller')
 const { authenticate } = require('../config/jwt')
 
 module.exports = (app) => {
   //Auth routes
   app.post("/api/register", AuthController.register)
+
+const AuthController = require("../Controllers/auth.controller")
+const { authenticate } = require("../config/jwt")
+const {  validateUser , validate}= require("../middlewares/validator")
+
+module.exports = (app) => {
+  //Auth routes
+  app.post("/api/register", validateUser ,validate ,AuthController.register)
+
   app.post("/api/login", AuthController.login)
   app.get("/api/users/getloggedinuser",
     authenticate,

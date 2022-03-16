@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 
 
 const UserSchema = new mongoose.Schema(
+
   {
     username: {
       type: String,
@@ -43,9 +44,16 @@ UserSchema.pre("save", function (next) {
     })
     .catch((err) => {
       console.log("hashing failed tho! now what! 20 minute rule?", err);
+
       next();
     });
 });
+
+      next()
+    })
+})
+
+
 
 module.exports = mongoose.model("User", UserSchema)
 
