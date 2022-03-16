@@ -1,17 +1,30 @@
 const User = require ("../models/user.model")
+const jwt = require ('jsonwebtoken')
+const bcrypt = require ('bcrypt')
 const VerificationToken = require("../models/verificationToken.model")
 const { sendError } = require("../utils/helper.utils")
 const { generteVT, mailTransport} = require("../utils/mail.utils")
 const { secret } = require("../config/jwt")
 
-
 const jwt = require ('jsonwebtoken')
 const bcrypt = require ('bcrypt');
 const {isValidObjectId } = require('mongoose')
 
+
 class AuthController {
     //register
      async register (req,res) {
+
+        const user = User(req.body) 
+            user
+             .save()
+             .then(() => {
+               res.status(200).json({msg: "Success!"})
+                  .cookie("usertoken" , jwt.sign({_id: user._id},secret), { httpOnly : true  }) 
+                  
+             }) 
+             .catch((err) => res.json(err))        
+
           const user  = await User.findOne(req.body.email)
 
              if ( user ){
@@ -43,10 +56,26 @@ class AuthController {
            }) 
           .catch((err) => res.json(err))        
 
+
     }
     //login
     async login (req,res) {
         
+            await User.findOne({ email:req.body.email})
+            .then ((user) => {
+              if (user == null) {
+                  res.json ({msg:"invalid login attempt"}) 
+              }
+              else {
+                 bcrypt 
+                 .compare(req.body.password , user.password)
+                 .then ((passwordIsValid) => {
+                    if (passwordIsValid) {
+                        res
+                         .json({msg:"Success!"})  
+                         .cookie("usertoken", jwt.sign( { _id : user._id},secret),{
+                           httpOnly: true ,
+
          await User.findOne({ email:req.body.email})
             .then ((user) => {
               if (user == null) { sendError(res ,401 ,'invalid login attempt')}
@@ -59,14 +88,22 @@ class AuthController {
                         res.cookie('usertoken', jwt.sign( { _id : user._id},secret),{
                            httpOnly: true ,
                            expiresIn: 'id'
+
                          })
                          
                     }
                     else {
+
+                        res.json({msg: "Invalid login , check  your password"})
+                    }
+                   })
+                 .catch((err) => res.json({msg: "invalid login attempt",err}))
+
                         res.json({msg: 'Invalid login , check  your password'})
                     }
                    })
                  .catch((err) => res.json({msg: 'invalid login attempt',err}))
+
             }
            })
            .catch ((err) => res.json(err))
@@ -86,6 +123,7 @@ class AuthController {
     }
 
 
+
     //verifyEmail 
     verfifyEmail = async(res) => {
       const {userId , VT} =req.body
@@ -97,7 +135,7 @@ class AuthController {
     
     }
   
-}
+            }
        module.exports = new AuthController();
     
 
