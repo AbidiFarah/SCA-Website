@@ -4,35 +4,30 @@ const { verify } = require('crypto');
 
 
 const UserSchema = new mongoose.Schema(
-    { 
-      username :{
-        type: String,
-        unique: true,
-        required:[ true ,"Username is required"],
-        minlength: [3 ,"Username must be at least 3 characters"]
 
-      },
-      email: {
-        type: String ,
-        unique: true ,
-        required: [true ,"Email is required "],
-         
-      },
-      password: {
-         type: String ,
-         required:[true ,"Password is required"]
-      },
-      photo: {
-        type: String,
-        default:""
-      },
-      verified: {
-        type: Boolean,
-        default: false,
-        required: true 
-      }
-    } , { timestamps: true } )
 
+  {
+    username: {
+      type: String,
+      required: true,
+      
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    profilePic: {
+      type: String,
+      default: "",
+    },
+  },
+  { timestamps: true }
+);
 
 //creating the virtual field for confirm password
 UserSchema.virtual("confirm")
@@ -51,9 +46,15 @@ UserSchema.pre("save", function (next) {
     })
     .catch((err) => {
       console.log("hashing failed tho! now what! 20 minute rule?", err);
+
+      next();
+    });
+});
+
       next()
     })
 })
+
 
 
 module.exports = mongoose.model("User", UserSchema)

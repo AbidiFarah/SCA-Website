@@ -7,4 +7,5 @@ module.exports = (app) => {
   app.delete("/api/blog/:id", BlogController.deleteBlog)
   app.get("/api/blog/", BlogController.getBlog)
   app.get("/api/blog/getallblogs", BlogController.getAllBlog)
+
 };
