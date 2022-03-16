@@ -1,5 +1,6 @@
 const User = require ("../models/user.model")
 const VerificationToken = require("../models/verificationToken.model")
+const ResetToken = require("../models/resetToken.model")
 const { sendError } = require("../utils/helper.utils")
 const { generteVT, mailTransport} = require("../utils/mail.utils")
 const { secret } = require("../config/jwt")
@@ -7,8 +8,7 @@ const { secret } = require("../config/jwt")
 
 const jwt = require ('jsonwebtoken')
 const bcrypt = require ('bcrypt');
-const {isValidObjectId } = require('mongoose')
-const { send } = require("express/lib/response")
+
 
 class AuthController {
     //register
@@ -135,9 +135,15 @@ class AuthController {
       if(!email) return sendError(res,401,'Please provide a valied email')
 
       const user = await User.findOne({email})
-      if(!user) return sendError(res,3 )
+      if(!user) return sendError(res,200,'User not found, invalid request !' )
       
+     const token = await ResetToken.findOne ({owner: user._id})
+     if(!token) return sendError(res,200,'Only after one hour you can request for another token!') 
+     
 
+     bcrypt.randomBytes(30, (err,buff => {
+        
+     })
    }
   
 } module.exports = new AuthController();

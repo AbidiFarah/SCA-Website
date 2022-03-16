@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt')
 const VerificationTokenSchema = new mongoose.Schema(
     { 
       owner :{
-        type: String, 
+        type: , 
         ref: "User" ,
         required: true 
 
