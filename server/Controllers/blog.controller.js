@@ -76,6 +76,7 @@ class BlogController {
           categories: {
             $in: [catName],
           },
+          
         });
       } else {
         blogs = await Blog.find();
