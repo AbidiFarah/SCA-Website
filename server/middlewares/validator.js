@@ -24,12 +24,4 @@ exports.validateUser = [
      .withMessage('Password must be 3 to 30 charcters long!'),
 ]
 
-exports.validate = (req ,res, next) =>{
-    const error = validationResult(req).array()
-    if(!error.length){
-      return next()}
-    else{
-      res.status(400).json({success: false, error: error[0].msg})
-    }   
     
-}

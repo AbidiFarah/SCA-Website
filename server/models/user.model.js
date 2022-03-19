@@ -9,7 +9,6 @@ const UserSchema = new mongoose.Schema(
         type: String,
         unique: true,
         required:[ true ,"Username is required"],
-        minlength: [3 ,"Username must be at least 3 characters"]
 
       },
       email: {
@@ -24,7 +23,7 @@ const UserSchema = new mongoose.Schema(
       },
       photo: {
         type: String,
-        default:""
+        default:"https://res.cloudinary.com/shecodesafrica/image/upload/v1647702357/avatar/ui_avatar_profil_user_circle-512_ha6gec.png"
       },
       verified: {
         type: Boolean,
