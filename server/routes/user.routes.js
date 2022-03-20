@@ -1,4 +1,4 @@
-const UserController = require('../Controllers/user.controller')
+const UserController = require("../Controllers/user.controller")
 
 
 module.exports = (app) => {
@@ -7,4 +7,4 @@ module.exports = (app) => {
   app.get("/api/:id", UserController.getUser)
   app.get("/api/", UserController.getAllUser)
   
-};
+}

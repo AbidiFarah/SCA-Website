@@ -1,16 +1,14 @@
 const User = require ("../models/user.model")
-const VerificationToken = require("../models/verificationToken.model")
-const ResetToken = require("../models/resetToken.model")
 const { sendError } = require("../utils/helper.utils")
-const { generteVT, mailTransport} = require("../utils/mail.utils")
-const { secret } = require("../config/jwt")
+const sendMail = require("../utils/mail.utils") 
+const { secret , createActivationToken , ACCESS_TOKEN_SECRET ,createRefreshToken} = require("../config/jwt")
 
 
 const jwt = require ('jsonwebtoken')
-const bcrypt = require ('bcrypt');
-
-
+const bcrypt = require ('bcrypt')
+const CLIENT_URL = process.env.CLIENT_URL
 class AuthController {
+
     //register
      async register (req,res) {
           const user  = await User.findOne(req.body.email)
@@ -20,31 +18,19 @@ class AuthController {
              }
           const NewUser =  new User(req.body)
 
-             const VT = generteVT()
-             const verificationToken = new VerificationToken({
-                owner: NewUser._id,
-                token: VT
-             })
-          await verificationToken.save()
-          await NewUser.save()
+          const activationToken = createActivationToken(NewUser)
+             
+          const url = `${CLIENT_URL}/user/activate/${activationToken}`
+          sendMail(NewUser.email, url, "Verify your email address")
 
-             mailTransport().sendMail({
-                from: 'SheCodesAfrica@gmail.com',
-                to: NewUser.email,
-                subject: "Verify your email account",
-                html: '<h1>${VT}</h1>'
-          
-             })
-
-
-        NewUser
           .then(() => {
-               res.status(200).json({msg: 'Success!'})
-                  .cookie('usertoken' , jwt.sign({_id: NewUser._id},secret), { httpOnly : true  }) 
+               res.status(200).json({msg: 'Register Success! Please activate your email to start ', NewUser })
            }) 
-          .catch((err) => res.json(err))        
+          .catch((err) => res.status(500).json(err))        
 
     }
+
+
     //login
     async login (req,res) {
         
@@ -141,7 +127,7 @@ class AuthController {
      if(!token) return sendError(res,200,'Only after one hour you can request for another token!') 
      
 
-     bcrypt.randomBytes(30, (err,buff => {
+     bcrypt.randomBytes(30, (err,buff) => {
         
      })
    }

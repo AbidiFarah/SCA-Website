@@ -44,8 +44,8 @@ class BlogController {
              if (username){
                  blogs = await Blog.find({username})
              }
-             else if (categorie){
-                 blogs = await Blog.find({categorie: $in [cat]})
+             else if (categories){
+                 blogs = await Blog.find({categories: $in [cat]})
              }
              else if (title){
                  blogs = await Blog.find({title})
