@@ -1,6 +1,6 @@
 const User = require ("../models/user.model")
 const { sendError } = require("../utils/helper.utils")
-const sendMail = require("../utils/mail.utils") 
+const {sendMail} = require("../utils/mail.utils") 
 const { secret , createActivationToken , ACCESS_TOKEN_SECRET ,createRefreshToken} = require("../config/jwt")
 
 
@@ -11,6 +11,7 @@ class AuthController {
 
     //register
      async register (req,res) {
+        try {
           const user  = await User.findOne(req.body.email)
 
              if ( user ){
@@ -23,11 +24,10 @@ class AuthController {
           const url = `${CLIENT_URL}/user/activate/${activationToken}`
           sendMail(NewUser.email, url, "Verify your email address")
 
-          .then(() => {
-               res.status(200).json({msg: 'Register Success! Please activate your email to start ', NewUser })
-           }) 
-          .catch((err) => res.status(500).json(err))        
+         res.status(200).json({msg: 'Register Success! Please activate your email to start ', NewUser })
 
+        }catch (err) { return res.status(500).json({msg: err.message})}
+            
     }
 
 
