@@ -1,11 +1,12 @@
-const express = require('express');
-const cors = require('cors');
-const cookies = require('cookie-parser');
-const req = require('express/lib/request');
+const express = require('express')
+const cors = require('cors')
+const cookies = require('cookie-parser')
+const bodyparser = require ('body-parser')
+const req = require('express/lib/request')
 const dotenv = require('dotenv').config()
 
 
-const app = express();
+const app = express()
 
 app.use(
   cors({
@@ -13,7 +14,8 @@ app.use(
     origin: "http://localhost:3000",
     
   })
-);
+)
+app.use(bodyparser.json())
 app.use(express.json())
 app.use(cookies())
 

@@ -12,13 +12,13 @@ module.exports.authenticate = (req, res, next) => {
 }
 
 module.exports.createActivationToken = (payload)  => {
-  return jwt.sign( payload.toJSON() , process.env.ACTIVATION_TOKEN_SECRET , {expiresIn: '5m'}) 
+  return jwt.sign( payload , process.env.ACTIVATION_TOKEN_SECRET , {expiresIn: '5m'}) 
 }
 
 module.exports.createAccessToken = (payload)  => {
-  return jwt.sign(payload.toJSON(), process.env.ACCESS_TOKEN_SECRET , {expiresIn: '15m'})
+  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET , {expiresIn: '15m'})
 }
 
 module.exports.createRefreshToken = (payload)  => {
-  return jwt.sign(payload.toJSON() , process.env.REFRECH_TOKEN_SECRET , {expiresIn: '7d'})
+  return jwt.sign(payload, process.env.REFRECH_TOKEN_SECRET , {expiresIn: '7d'})
 }

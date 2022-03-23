@@ -1,6 +1,5 @@
 const mongoose =require ('mongoose')
-const bcrypt = require('bcrypt');
-const { verify } = require('crypto');
+const bcrypt = require('bcrypt')
 
 
 const UserSchema = new mongoose.Schema(
@@ -24,11 +23,6 @@ const UserSchema = new mongoose.Schema(
       photo: {
         type: String,
         default:"https://res.cloudinary.com/shecodesafrica/image/upload/v1647702357/avatar/ui_avatar_profil_user_circle-512_ha6gec.png"
-      },
-      verified: {
-        type: Boolean,
-        default: false,
-        required: true 
       }
     } , { timestamps: true } )
 
