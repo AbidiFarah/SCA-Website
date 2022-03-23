@@ -1,4 +1,5 @@
-const jwt = require("jsonwebtoken")
+
+const jwt = require("jsonwebtoken");
 
 module.exports.secret = process.env.SECRET
 module.exports.authenticate = (req, res, next) => {
@@ -8,8 +9,13 @@ module.exports.authenticate = (req, res, next) => {
     } else {
       next();
     }
+
+  });
+};
+
   })
 }
+
 
 module.exports.createActivationToken = (payload)  => {
   return jwt.sign( payload , process.env.ACTIVATION_TOKEN_SECRET , {expiresIn: '5m'}) 
@@ -20,5 +26,6 @@ module.exports.createAccessToken = (payload)  => {
 }
 
 module.exports.createRefreshToken = (payload)  => {
-  return jwt.sign(payload, process.env.REFRECH_TOKEN_SECRET , {expiresIn: '7d'})
+
+  return jwt.sign(payload.toJSON() , process.env.REFRECH_TOKEN_SECRET , {expiresIn: '7d'})
 }

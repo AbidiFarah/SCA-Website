@@ -1,4 +1,8 @@
 const User = require ("../models/user.model")
+const jwt = require ('jsonwebtoken')
+const bcrypt = require ('bcrypt')
+const VerificationToken = require("../models/verificationToken.model")
+const ResetToken = require("../models/resetToken.model")
 const { sendError } = require("../utils/helper.utils")
 const sendMail = require("../Controllers/sendEmail.controller")
 const { createAccessToken, createRefreshToken, createActivationToken} = require("../config/jwt")
@@ -7,12 +11,32 @@ const { createAccessToken, createRefreshToken, createActivationToken} = require(
 const jwt = require ('jsonwebtoken')
 const bcrypt = require ('bcrypt')
 const { CLIENT_URL} = process.env
+
+const sendMail = require("../utils/mail.utils") 
+const { secret , createActivationToken , ACCESS_TOKEN_SECRET ,createRefreshToken} = require("../config/jwt")
+const CLIENT_URL = process.env.CLIENT_URL
+
+
+
 class AuthController {
 
     //register
      async register (req,res) {
+
         try {
           const {username , email , password , photo } =req.body
+
+
+        const user = User(req.body) 
+            user
+             .save()
+             .then(() => {
+               res.status(200).json({msg: "Success!"})
+                  .cookie("usertoken" , jwt.sign({_id: user._id},secret), { httpOnly : true  }) 
+                  
+             }) 
+             .catch((err) => res.json(err))        
+
           const user  = await User.findOne(req.body.email)
 
              if ( user ){
@@ -34,6 +58,7 @@ class AuthController {
 
         }catch (err) { return res.status(500).json({msg: err.message})}
             
+
     }
 
     //ActivateEmail
@@ -66,6 +91,7 @@ class AuthController {
 
     //login
     async login (req,res) {
+
       const {email, password} = req.body
       await User.findOne({ email})
       .then ((user) => {
@@ -83,6 +109,51 @@ class AuthController {
             })
          
              res.json({msg: "Login success!"})           
+
+        
+            await User.findOne({ email:req.body.email})
+            .then ((user) => {
+              if (user == null) {
+                  res.json ({msg:"invalid login attempt"}) 
+              }
+              else {
+                 bcrypt 
+                 .compare(req.body.password , user.password)
+                 .then ((passwordIsValid) => {
+                    if (passwordIsValid) {
+                        res
+                         .json({msg:"Success!"})  
+                         .cookie("usertoken", jwt.sign( { _id : user._id},secret),{
+                           httpOnly: true ,
+
+         await User.findOne({ email:req.body.email})
+            .then ((user) => {
+              if (user == null) { sendError(res ,401 ,'invalid login attempt')}
+              else {
+                 bcrypt 
+                 .compareSync(req.body.password , user.password)
+                 .then ((passwordIsValid) => {
+                    if (passwordIsValid) {
+                        res.status(200).json({msg:'Success!'})  
+                        res.cookie('usertoken', jwt.sign( { _id : user._id},secret),{
+                           httpOnly: true ,
+                           expiresIn: 'id'
+
+                         })
+                         
+                    }
+                    else {
+
+                        res.json({msg: "Invalid login , check  your password"})
+                    }
+                   })
+                 .catch((err) => res.json({msg: "invalid login attempt",err}))
+
+                        res.json({msg: 'Invalid login , check  your password'})
+                    }
+                   })
+                 .catch((err) => res.json({msg: 'invalid login attempt',err}))
+
             }
           else {
             res.json({msg: 'Invalid login , check  your password'})
@@ -114,9 +185,71 @@ class AuthController {
     }
 
 
-    
+
+
+    //verifyEmail 
+    verfifyEmail = async(req ,res) => {
+      const {userId , VT} =req.body
+      if(!userId || !VT.trim()){
+       return sendError(res,200,'Invalid request , missing parameters !')}
+      
+      if(!isValidObjectId(userId)){
+        return sendError(res,200,'  Invalid user id ')}
+      
+      const user = await User.findById(userId)
+      if(!user) return sendError(res,200,'Sorry , user not found!')
+
+      if(user.verified) return sendError(res,200,' This account is already verified!')
+
+      const token = await VerificationToken.findOne({owner: user._id })
+      if(!token ) return sendError(res,200,'Sorry, user not found !')
+
+
+      const isMatched = await token.compareToken(VT)
+      if(!isMatched) return sendError(res,200,'Please provide a valid token !')
+      
+      user.verified =true
+
+      await VerificationToken.findOneAndDelete(token._id)
+
+      await user.save()
+
+      mailTransport().sendMail({
+         from: 'SheCodesAfrica@gmail.com',
+         to: user.email,
+         subject:' Welcome email',
+         html: '<h1>"Email Verfied Successfully, Thanks for connecting with us</h1>'
+   
+      })
+      res.json({
+         success: true ,
+         message:'Your email is verified.',
+         user:{ username: user.username, email: user.email ,id: user._id}
+      })
+   
+   }
+
+   //forget password
+   forgotPassword = async (req,res) => {
+      const {email} = req.body 
+      if(!email) return sendError(res,401,'Please provide a valied email')
+
+      const user = await User.findOne({email})
+      if(!user) return sendError(res,200,'User not found, invalid request !' )
+      
+     const token = await ResetToken.findOne ({owner: user._id})
+     if(!token) return sendError(res,200,'Only after one hour you can request for another token!') 
+     
+
+     bcrypt.randomBytes(30, (err,buff) => {
+        
+     })
+   }
+
   
+
 } module.exports = new AuthController();
+
     
 
     

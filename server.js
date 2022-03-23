@@ -6,7 +6,9 @@ const req = require('express/lib/request')
 const dotenv = require('dotenv').config()
 
 
+
 const app = express()
+
 
 app.use(
   cors({
@@ -14,8 +16,10 @@ app.use(
     origin: "http://localhost:3000",
     
   })
+
 )
 app.use(bodyparser.json())
+
 app.use(express.json())
 app.use(cookies())
 
@@ -24,6 +28,7 @@ require("./server/routes/auth.routes")(app)
 require("./server/routes/user.routes")(app)
 require("./server/routes/job.routes")(app)
 require("./server/routes/blog.routes")(app)
+
 
 
 app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT} !`) )
